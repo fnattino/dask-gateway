@@ -4,7 +4,7 @@ import os
 import pwd
 import shutil
 
-from traitlets import Unicode, default
+from traitlets import Bool, Unicode, default
 
 from ..base import ClusterConfig
 from ..db_base import DBBackendBase
