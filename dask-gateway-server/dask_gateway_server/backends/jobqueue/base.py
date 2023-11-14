@@ -59,6 +59,8 @@ class JobQueueBackend(DBBackendBase):
 
     status_command = Unicode(help="The path to the job status command", config=True)
 
+    can_sudo = Bool(True, help="Can run with sudo privileges", config=True)
+
     def get_submit_cmd_env_stdin(self, cluster, worker=None):
         raise NotImplementedError
 
@@ -88,7 +90,8 @@ class JobQueueBackend(DBBackendBase):
         return cert_path, key_path
 
     async def do_as_user(self, user, action, **kwargs):
-        cmd = ["sudo", "-nHu", user, self.dask_gateway_jobqueue_launcher]
+        cmd = ["sudo", "-nHu", user] if self.can_sudo else []
+        cmd.append(self.dask_gateway_jobqueue_launcher)
         kwargs["action"] = action
         proc = await asyncio.create_subprocess_exec(
             *cmd,
